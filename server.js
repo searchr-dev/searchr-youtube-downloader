@@ -28,6 +28,17 @@ dirs.forEach(dir => {
   }
 });
 
+// Dynamically write cookies file if provided via environment variable
+const cookiesPath = path.join(__dirname, 'data', 'cookies.txt');
+if (process.env.COOKIES_CONTENT) {
+  try {
+    fs.writeFileSync(cookiesPath, process.env.COOKIES_CONTENT, 'utf8');
+    console.log('🍪 Cookies file successfully written from environment variable.');
+  } catch (err) {
+    console.error('❌ Failed to write cookies file:', err.message);
+  }
+}
+
 /* ─── View Engine Setup ─────────────────────────────────────────── */
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));

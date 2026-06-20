@@ -9,9 +9,25 @@
 
 const { spawn, execFile } = require('child_process');
 const path = require('path');
+const fs = require('fs');
 
 // Path to yt-dlp binary (from .env or system PATH)
 const YTDLP = process.env.YTDLP_PATH || 'yt-dlp';
+
+// Path to cookies file (prioritize COOKIES_PATH env var, fallback to data/cookies.txt)
+const COOKIES_PATH = process.env.COOKIES_PATH || path.join(__dirname, '../data/cookies.txt');
+
+/**
+ * Appends cookies file argument to yt-dlp arguments if cookies file exists.
+ * @param {string[]} args - Target arguments array
+ * @returns {string[]}
+ */
+function getBaseArgs(args) {
+  if (fs.existsSync(COOKIES_PATH)) {
+    args.push('--cookies', COOKIES_PATH);
+  }
+  return args;
+}
 
 /**
  * Validates a YouTube URL format.
@@ -34,14 +50,14 @@ function getVideoInfo(url) {
       return reject(new Error('Invalid YouTube URL'));
     }
 
-    const args = [
+    const args = getBaseArgs([
       '--dump-json',        // Output info as JSON
       '--no-warnings',      // Suppress warnings
       '--no-playlist',      // Single video only
       '--skip-download',    // Don't download
       '--js-runtimes', 'node', // Solve signature challenges using node
       url
-    ];
+    ]);
 
     execFile(YTDLP, args, { maxBuffer: 10 * 1024 * 1024 }, (error, stdout, stderr) => {
       if (error) {
@@ -145,14 +161,14 @@ async function getFormattedInfo(url) {
  * @returns {ChildProcess}
  */
 function spawnDownload(url, formatId, outputPath, opts = {}) {
-  const args = [
+  const args = getBaseArgs([
     '-f', formatId,
     '-o', outputPath,
     '--no-playlist',
     '--no-warnings',
     '--newline',         // Progress on new lines for parsing
     '--js-runtimes', 'node'
-  ];
+  ]);
 
   if (process.env.FFMPEG_PATH) {
     args.push('--ffmpeg-location', process.env.FFMPEG_PATH);
@@ -196,7 +212,7 @@ function spawnDownload(url, formatId, outputPath, opts = {}) {
  * @returns {ChildProcess}
  */
 function downloadBestVideo(url, formatId, outputPath) {
-  const args = [
+  const args = getBaseArgs([
     '-f', `${formatId}+bestaudio/best`,
     '--merge-output-format', 'mp4',
     '-o', outputPath,
@@ -204,7 +220,7 @@ function downloadBestVideo(url, formatId, outputPath) {
     '--no-warnings',
     '--newline',
     '--js-runtimes', 'node'
-  ];
+  ]);
 
   if (process.env.FFMPEG_PATH) {
     args.push('--ffmpeg-location', process.env.FFMPEG_PATH);
@@ -224,7 +240,7 @@ function downloadBestVideo(url, formatId, outputPath) {
  * @returns {ChildProcess}
  */
 function downloadAudio(url, audioFormat, outputPath) {
-  const args = [
+  const args = getBaseArgs([
     '-x',
     '--audio-format', audioFormat,
     '--audio-quality', '0',   // Best quality
@@ -233,7 +249,7 @@ function downloadAudio(url, audioFormat, outputPath) {
     '--no-warnings',
     '--newline',
     '--js-runtimes', 'node'
-  ];
+  ]);
 
   if (process.env.FFMPEG_PATH) {
     args.push('--ffmpeg-location', process.env.FFMPEG_PATH);
@@ -253,14 +269,14 @@ function downloadAudio(url, audioFormat, outputPath) {
  * @returns {ChildProcess}
  */
 function downloadLiveStream(url, outputPath, opts = {}) {
-  const args = [
+  const args = getBaseArgs([
     '-f', 'best',
     '-o', outputPath,
     '--no-playlist',
     '--no-warnings',
     '--newline',
     '--js-runtimes', 'node'
-  ];
+  ]);
 
   if (process.env.FFMPEG_PATH) {
     args.push('--ffmpeg-location', process.env.FFMPEG_PATH);
@@ -295,7 +311,7 @@ function downloadClip(url, startTime, endTime, quality, isAudioOnly, outputPath)
         ? 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/b/best'
         : `bestvideo[height<=${quality}][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=${quality}]+bestaudio/b[height<=${quality}]/best`);
 
-  const args = [
+  const args = getBaseArgs([
     '-f', formatSpec,
     '--download-sections', `*${startTime}-${endTime}`,
     '--force-keyframes-at-cuts',
@@ -304,7 +320,7 @@ function downloadClip(url, startTime, endTime, quality, isAudioOnly, outputPath)
     '--no-warnings',
     '--newline',
     '--js-runtimes', 'node'
-  ];
+  ]);
 
   if (process.env.FFMPEG_PATH) {
     args.push('--ffmpeg-location', process.env.FFMPEG_PATH);
