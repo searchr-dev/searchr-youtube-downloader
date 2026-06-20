@@ -1,0 +1,91 @@
+<!-- History Page — Searchr YouTube Downloader -->
+
+<div class="page-header">
+  <h1 class="page-title">
+    Download History
+  </h1>
+  <p class="page-subtitle">Your recent downloads at a glance</p>
+</div>
+
+<!-- Controls -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="d-flex gap-2">
+    <button class="btn btn-sm btn-glass filter-btn active" data-filter="all">All</button>
+    <button class="btn btn-sm btn-glass filter-btn" data-filter="video">
+      <i class="fas fa-video me-1"></i>Video
+    </button>
+    <button class="btn btn-sm btn-glass filter-btn" data-filter="audio">
+      <i class="fas fa-music me-1"></i>Audio
+    </button>
+    <button class="btn btn-sm btn-glass filter-btn" data-filter="clip">
+      <i class="fas fa-cut me-1"></i>Clip
+    </button>
+    <button class="btn btn-sm btn-glass filter-btn" data-filter="live">
+      <i class="fas fa-broadcast-tower me-1"></i>Live
+    </button>
+  </div>
+  <% if (entries && entries.length > 0) { %>
+    <button class="btn btn-sm btn-danger-glass" id="clearHistoryBtn">
+      <i class="fas fa-trash me-1"></i> Clear All
+    </button>
+  <% } %>
+</div>
+
+<!-- History List -->
+<% if (!entries || entries.length === 0) { %>
+  <div class="glass-card p-5 text-center">
+    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+    <h4 style="color: var(--text-secondary);">No Downloads Yet</h4>
+    <p class="text-muted">Your download history will appear here.</p>
+    <a href="/video" class="btn btn-accent mt-2">
+      <i class="fas fa-download me-1"></i> Start Downloading
+    </a>
+  </div>
+<% } else { %>
+  <div id="historyList">
+    <% entries.forEach((entry) => { %>
+      <div class="glass-card history-item p-3 mb-3" data-type="<%= entry.type %>" data-id="<%= entry.id %>">
+        <div class="row g-3 align-items-center">
+          <!-- Thumbnail -->
+          <div class="col-auto">
+            <% if (entry.thumbnail) { %>
+              <img src="<%= entry.thumbnail %>" alt="thumb" class="history-thumb rounded">
+            <% } else { %>
+              <div class="history-thumb-placeholder rounded">
+                <i class="fas fa-<%= entry.type === 'audio' ? 'music' : entry.type === 'live' ? 'broadcast-tower' : entry.type === 'clip' ? 'cut' : 'video' %>"></i>
+              </div>
+            <% } %>
+          </div>
+
+          <!-- Info -->
+          <div class="col">
+            <h6 class="mb-1 text-truncate" style="max-width: 500px; color: var(--text-primary);"><%= entry.title %></h6>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+              <span class="badge badge-type badge-type-<%= entry.type %>">
+                <i class="fas fa-<%= entry.type === 'audio' ? 'music' : entry.type === 'live' ? 'broadcast-tower' : entry.type === 'clip' ? 'cut' : 'video' %> me-1"></i>
+                <%= entry.type.charAt(0).toUpperCase() + entry.type.slice(1) %>
+              </span>
+              <span class="text-muted small"><%= entry.quality %></span>
+              <span class="text-muted small">•</span>
+              <span class="text-muted small" style="font-family: var(--font-mono);"><%= entry.format.toUpperCase() %></span>
+              <span class="text-muted small">•</span>
+              <span class="text-muted small"><%= new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %></span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="col-auto">
+            <a href="<%= entry.url %>" target="_blank" class="btn btn-sm btn-glass me-1" title="Open on YouTube">
+              <i class="fab fa-youtube"></i>
+            </a>
+            <button class="btn btn-sm btn-danger-glass delete-history-btn" data-id="<%= entry.id %>" title="Delete">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+<% } %>
+
+<script src="/js/history.js"></script>

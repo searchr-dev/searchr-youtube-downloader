@@ -1,0 +1,10 @@
+node_modules/
+downloads/
+data/history.json
+.env
+*.log
+*.exe
+ffmpeg
+ffprobe
+yt-dlp
+bin/

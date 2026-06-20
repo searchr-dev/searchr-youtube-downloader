@@ -1,0 +1,66 @@
+<!-- Navbar Partial — Searchr YouTube Downloader -->
+<nav class="navbar navbar-expand-lg navbar-glass fixed-top">
+  <div class="container">
+    <!-- Brand -->
+    <a class="navbar-brand brand-glow" href="/">
+      <span class="brand-text">Searchr</span>
+      <span class="brand-sub">Downloader</span>
+    </a>
+
+    <!-- Mobile Toggle -->
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-label="Toggle navigation">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Nav Links -->
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav ms-auto gap-1">
+        <li class="nav-item">
+          <a class="nav-link nav-link-glow <%= currentPath === '/' ? 'active' : '' %>" href="/">
+            Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link nav-link-glow <%= currentPath.startsWith('/video') ? 'active' : '' %>" href="/video">
+            Video
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link nav-link-glow <%= currentPath.startsWith('/audio') ? 'active' : '' %>" href="/audio">
+            Audio
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link nav-link-glow <%= currentPath.startsWith('/clip') ? 'active' : '' %>" href="/clip">
+            Clip
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link nav-link-glow <%= currentPath.startsWith('/live') ? 'active' : '' %>" href="/live">
+            Live
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link nav-link-glow <%= currentPath.startsWith('/thumbnail') ? 'active' : '' %>" href="/thumbnail">
+            Thumbnails
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link nav-link-glow <%= currentPath.startsWith('/history') ? 'active' : '' %>" href="/history">
+            History
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link nav-link-glow <%= currentPath === '/about' ? 'active' : '' %>" href="/about">
+            About
+          </a>
+        </li>
+        <li class="nav-item d-flex align-items-center ms-lg-3 mt-2 mt-lg-0">
+          <button id="theme-toggle" class="btn-theme-toggle" aria-label="Toggle theme" title="Toggle theme (System / Dark / Light)">
+            <i class="theme-toggle-icon fas fa-circle-half-stroke"></i>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
